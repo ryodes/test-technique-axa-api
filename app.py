@@ -35,6 +35,28 @@ def home():
 def create_devis():
     data = request.json
     print(data)
+    nouveau_devis = Devis(
+        type_ouvrage=data.get('typeOuvrage'),
+        nom_client=data.get('nomClient'),
+        numero_opportunite=data.get('numeroOpportunite'),
+        garantie=data.get('garantie'),
+        destination_ouvrage=data.get('destinationOuvrage'),
+        type_travaux=data.get('typeTravaux'),
+        cout_ouvrage=data.get('coutOuvrage'),
+        presence_existant=data.get('existant') == 'oui',
+        client_vip=data.get('vip') == 'oui',
+        rcmo=data.get('rcmo') == 'oui',
+        tarif_trc=data.get('tarifTRC'),
+        tarif_do=data.get('tarifDO'),
+        adresse_chantier=data.get('adresseChantier'),
+        description=data.get('description')
+    )
+
+    print("before")
+    db.session.add(nouveau_devis)
+    db.session.commit()
+    print("after")
+
     return jsonify({"message": "Devis reçu", "data": data}), 200
 
 if __name__ == "__main__":
