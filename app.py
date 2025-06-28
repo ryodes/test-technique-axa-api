@@ -27,14 +27,35 @@ class Devis(db.Model):
     adresse_chantier = db.Column(db.String(255))
     description = db.Column(db.Text)
 
-@app.route("/")
-def home():
-    return "API Flask en place !"
+@app.route('/api/devis', methods=['GET'])
+def get_devis():
+    devis_liste = Devis.query.all()
+    result = []
+
+    for devis in devis_liste:
+        result.append({
+            "id": devis.id,
+            "type_ouvrage": devis.type_ouvrage,
+            "nom_client": devis.nom_client,
+            "numero_opportunite": devis.numero_opportunite,
+            "garantie": devis.garantie,
+            "destination_ouvrage": devis.destination_ouvrage,
+            "type_travaux": devis.type_travaux,
+            "cout_ouvrage": devis.cout_ouvrage,
+            "presence_existant": devis.presence_existant,
+            "client_vip": devis.client_vip,
+            "rcmo": devis.rcmo,
+            "tarif_trc": devis.tarif_trc,
+            "tarif_do": devis.tarif_do,
+            "adresse_chantier": devis.adresse_chantier,
+            "description": devis.description,
+        })
+
+    return jsonify(result)
 
 @app.route("/api/devis", methods=["POST"])
 def create_devis():
     data = request.json
-    print(data)
     nouveau_devis = Devis(
         type_ouvrage=data.get('typeOuvrage'),
         nom_client=data.get('nomClient'),
@@ -52,10 +73,8 @@ def create_devis():
         description=data.get('description')
     )
 
-    print("before")
     db.session.add(nouveau_devis)
     db.session.commit()
-    print("after")
 
     return jsonify({"message": "Devis reçu", "data": data}), 200
 
