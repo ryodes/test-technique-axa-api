@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from fpdf import FPDF
 from docx import Document
+from docx.shared import Inches, Pt
 from datetime import datetime
 import io
 
@@ -148,7 +149,67 @@ def generate_pdf(devis_id):
     buffer.seek(0)
 
     return send_file(buffer, mimetype='application/pdf', as_attachment=True,
-                     download_name=f"devis_{devis_id}.pdf")
+                     download_name=f"Proposition_commerciale_{devis.numero_opportunite}_{datetime.today().strftime('%d/%m/%Y:%Hh%M')}.pdf")
+
+@app.route('/api/devis/<int:devis_id>/word')
+def generate_word(devis_id):
+    devis = Devis.query.get_or_404(devis_id)
+
+    doc = Document()
+
+    # Logo (facultatif, uniquement si Word accepte le PNG depuis le chemin local)
+    try:
+        doc.add_picture('logo.png', width=Inches(1.2))
+    except Exception as e:
+        print("Logo non chargé :", e)
+
+    # Titre
+    doc.add_paragraph("TARIFICATION INDICATIVE", style='Title')
+
+    doc.add_paragraph(
+        "Tarification indicative (*) sur la base d’un risque conforme aux paramètres suivants :",
+        style='Normal'
+    )
+
+    doc.add_paragraph(f"Type d’ouvrage : {devis.type_ouvrage}")
+    doc.add_paragraph(f"Types de travaux réalisés : {devis.type_travaux}")
+    doc.add_paragraph(f"Coût du chantier : {devis.cout_ouvrage} €")
+    doc.add_paragraph(f"Présence d’existant : {'Oui' if devis.presence_existant else 'Non'}")
+    doc.add_paragraph(f"Garantie choisie : {devis.garantie}")
+    doc.add_paragraph(f"Description de l’ouvrage : {devis.description}")
+    doc.add_paragraph(f"Adresse du chantier : {devis.adresse_chantier}")
+
+    # Section garanties
+    doc.add_paragraph("Garanties Tous Risques chantier").bold = True
+    doc.add_paragraph("MONTANTS DE GARANTIES (exprimés en €)").underline = True
+    doc.add_paragraph("Dommages matériels à l'ouvrage : xxxxxxxxx")
+    doc.add_paragraph("Responsabilité civile (tous dommages confondus) : xxxxxxxxx")
+    doc.add_paragraph("Maintenance-visite : xxxxxxxxx")
+    doc.add_paragraph("Mesure conservatoire : xxxxxxxxx")
+
+    doc.add_paragraph("")
+
+    doc.add_paragraph("MONTANTS DE FRANCHISES (par sinistre exprimés en €)").underline = True
+    doc.add_paragraph("Dommages subis par les ouvrages de bâtiment : xxxxxxx")
+    doc.add_paragraph("Catastrophes naturelles : montant défini par la loi")
+    doc.add_paragraph("Responsabilité civile (1)")
+    doc.add_paragraph("  - Assuré maître d'ouvrage : xxxxxxx")
+    doc.add_paragraph("  - Assurés intervenants : SANS")
+    doc.add_paragraph("Maintenance-visite : xxxxxxx")
+    doc.add_paragraph("(1) Ces franchises s'appliquent pour des dommages autres que corporels")
+
+    doc.add_paragraph("")
+    doc.add_paragraph(f"Date de simulation de tarif : le {datetime.today().strftime('%d/%m/%Y')}")
+    doc.add_paragraph("(*) Cette tarification est faite sous réserve d’acceptation du risque par la compagnie")
+
+    # Envoi en mémoire
+    buffer = io.BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+
+    return send_file(buffer, mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                     as_attachment=True, 
+                     download_name=f"Proposition_commerciale_{devis.numero_opportunite}_{datetime.today().strftime('%d/%m/%Y:%Hh%M')}.docx")
 
 if __name__ == "__main__":
     app.run(debug=True)
