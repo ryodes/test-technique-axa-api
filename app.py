@@ -121,7 +121,7 @@ def generate_pdf(devis_id):
 
     # --- GARANTIES ---
     pdf.cell(0, 8, "Garanties Tous Risques chantier", ln=True)
-    pdf.cell(0, 8, "MONTANTS DE GARANTIES (exprimés en €)", ln=True)
+    add_section_title("MONTANTS DE GARANTIES (exprimés en €)")
     pdf.cell(0, 8, "Dommages matériels à l'ouvrage : xxxxxxxxx", ln=True)
     pdf.cell(0, 8, "Responsabilité civile (tous dommages confondus) : xxxxxxxxx", ln=True)
     pdf.cell(0, 8, "Maintenance-visite : xxxxxxxxx", ln=True)
@@ -131,10 +131,12 @@ def generate_pdf(devis_id):
     add_section_title("MONTANTS DE FRANCHISES (par sinistre exprimés en €)")
     pdf.cell(0, 8, "Dommages subis par les ouvrages de bâtiment : xxxxxxx", ln=True)
     pdf.cell(0, 8, "Catastrophes naturelles : montant défini par la loi", ln=True)
-    pdf.cell(0, 8, "Responsabilité civile :", ln=True)
-    pdf.cell(0, 8, "- Assuré maître d'ouvrage : xxxxxxx", ln=True)
-    pdf.cell(0, 8, "- Assurés intervenants SANS : xxxxxxx", ln=True)
+    pdf.cell(0, 8, "Responsabilité civile (1)", ln=True)
+    pdf.cell(0, 8, "  - Assuré maître d'ouvrage : xxxxxxx", ln=True)
+    pdf.cell(0, 8, "  - Assurés intervenants: SANS", ln=True)
     pdf.cell(0, 8, "Maintenance-visite : xxxxxxx", ln=True)
+    pdf.ln(4)
+    pdf.cell(0, 8, "     (1) Ces franchises s'appliquent pour des dommages autres que corporels", ln=True)
 
     pdf.ln(10)
     pdf.set_font("DejaVu", style="I", size=10)
