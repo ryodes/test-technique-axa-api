@@ -117,7 +117,6 @@ def generate_pdf(devis_id):
     pdf.cell(0, 8, f"Garantie choisie : {devis.garantie}", ln=True)
     pdf.cell(0, 8, f"Description de l’ouvrage : {devis.description}", ln=True)
     pdf.multi_cell(0, 8, f"Adresse du chantier : {devis.adresse_chantier}")
-    pdf.ln(8)
 
     # --- GARANTIES ---
     pdf.cell(0, 8, "Garanties Tous Risques chantier", ln=True)
