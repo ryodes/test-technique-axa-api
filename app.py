@@ -211,6 +211,16 @@ def generate_word(devis_id):
                      as_attachment=True, 
                      download_name=f"Proposition_commerciale_{devis.numero_opportunite}_{datetime.today().strftime('%d/%m/%Y:%Hh%M')}.docx")
 
+@app.route("/reset-devis", methods=["POST"])
+def reset_devis():
+    token = request.args.get("token")
+    if token != "test123":
+        return {"error": "Accès refusé"}, 403
+
+    Devis.query.delete()
+    db.session.commit()
+    return {"message": "Base devis vidée ✅"}
+
 if __name__ == "__main__":
     app.run(debug=True)
 
